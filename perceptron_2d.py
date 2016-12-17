@@ -1,6 +1,5 @@
-import numpy as np
 import sys
-
+import numpy as np
 
 def parseDataSet(dataSetFilePath):
     data = np.loadtxt(dataSetFilePath, delimiter = ',')
@@ -8,7 +7,6 @@ def parseDataSet(dataSetFilePath):
     y = data[:, -1]
 
     return x,y
-
 
 def calcR(x):
     R = 0
@@ -28,41 +26,43 @@ def calcGama(x,y):
 
     return gama
 
+def cartezian_product(x,w):
+    sum = 0
+    for i,e in enumerate(x):
+        sum += e*w[i]
+    return sum
 
 def perceptronAlgo(x, y, learningRate=1):
-    w = [0] * 3
+    weight_vector = [0] * (x[0].size + 1)
     input = []
-    mistakes, iterations = 0,0
-    weightsChanged = False
-    while not weightsChanged :
-        weightsChanged = True
+    bias = 1
+    mistakes, iterations = 0, 0
+    weights_changed = False
+    while not weights_changed:
+        weights_changed = True
         for idx,xi in enumerate(x):
             iterations += 1
-            lst = xi.tolist()
-            x1,x2 = lst[0] , lst[1]
-            if ((w[0] * 1 + w[1] * x1 + w[2] * x2) * y[idx]) <= 0:
-                w = [y[idx]*1*learningRate + w[0], y[idx]*x1*learningRate + w[1],y[idx]*x2*learningRate + w[2]]
-                weightsChanged = False
+            xi_list = [bias] + xi.tolist()
+            if cartezian_product(xi_list, weight_vector) * y[idx] <= 0:
+                weight_vector = [y[idx] * xi_list[w_index] * learningRate + elem for w_index,elem in enumerate(weight_vector)]
+                weights_changed = False
                 mistakes += 1
 
-    return w, mistakes, iterations
+    return weight_vector, mistakes, iterations
 
 
 if __name__ == '__main__':
     x,y = parseDataSet(sys.argv[1])
-    w,mistakes, iterations = perceptronAlgo(x,y,0.3)
+    w,mistakes, iterations = perceptronAlgo(x,y,1)
     print w , mistakes , iterations
 
     outputFile = open("output.txt", 'w')
     outputFile.write("output1: " + str(w) + "\n")
     outputFile.write("output2: " + str(mistakes)+ "\n")
     outputFile.write("output3: " + str(iterations)+ "\n")
+    #
+    # r = calcR(x)
+    # gama = calcGama(x,y)
 
-    r = calcR(x)
-    gama = calcGama(x,y)
 
     # print (r/gama)*(r/gama)
-
-
-
-
