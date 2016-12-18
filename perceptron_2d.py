@@ -54,7 +54,7 @@ def perceptronAlgo(x, y, learningRate=1):
 
 if __name__ == '__main__':
     x,y = parseDataSet(sys.argv[1])
-    w,mistakes, iterations = perceptronAlgo(x,y,0.2)
+    w,mistakes, iterations = perceptronAlgo(x,y,0.76)
     print w , mistakes , iterations
 
     outputFile = open("output.txt", 'w')
@@ -66,4 +66,4 @@ if __name__ == '__main__':
     gama = calcGama(x,y)
     print r , gama
 
-    print np.math.sqrt((r / gama) * (r / gama))
+    print (r / gama) * (r / gama)
