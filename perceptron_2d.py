@@ -7,6 +7,8 @@ import numpy as np
 def import_data(dataSetFilePath):
     data = np.loadtxt(dataSetFilePath, delimiter=',')
 
+    return x, y
+
 
 def parse_data(data):
     """
@@ -19,8 +21,8 @@ def calc_r(x):
     R = 0
     for idx, xi in enumerate(x):
         lst = xi.tolist()
-        if (lst[0] * lst[0] + lst[1] * lst[1] > R):
-            R = lst[0] * lst[0] + lst[1] * lst[1]
+        if np.math.sqrt(lst[0] * lst[0] + lst[1] * lst[1]) > R:
+            R = np.math.sqrt(lst[0] * lst[0] + lst[1] * lst[1])
 
     return R
 
@@ -29,8 +31,9 @@ def calcGama(x, y):
     gama = sys.float_info.max
     for idx, xi in enumerate(x):
         lst = xi.tolist()
-        if (y[idx] * lst[0] + y[idx] * lst[1] < gama):
-            gama = y[idx] * lst[0] + y[idx] * lst[1]
+        xi_size = np.math.sqrt(lst[0] * lst[0] + lst[1] * lst[1])
+        if xi_size * y[idx] < gama:
+            gama = xi_size * y[idx]
 
     return gama
 
@@ -104,9 +107,9 @@ if __name__ == '__main__':
     outputFile.write("output1: " + str(w) + "\n")
     outputFile.write("output2: " + str(mistakes) + "\n")
     outputFile.write("output3: " + str(iterations) + "\n")
-    #
-    # r = calcR(x)
-    # gama = calcGama(x,y)
 
+    r = calcR(x)
+    gama = calcGama(x, y)
+    print r, gama
 
-    # print (r/gama)*(r/gama)
+    print (r / gama) * (r / gama)
