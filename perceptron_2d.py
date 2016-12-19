@@ -6,15 +6,10 @@ import numpy as np
 
 def import_data(dataSetFilePath):
     data = np.loadtxt(dataSetFilePath, delimiter=',')
+    x = data[:, :-1]
+    y = data[:, -1]
 
     return x, y
-
-
-def parse_data(data):
-    """
-    Returns x, y
-    """
-    return data[:, :-1], data[:, -1]
 
 
 def calc_r(x):
@@ -50,16 +45,16 @@ def perceptronAlgo(x, y, learningRate=1):
     input = []
     bias = 1
     mistakes, iterations = 0, 0
-    weights_changed = False
-    while not weights_changed:
-        weights_changed = True
+    weights_changed = True
+    while weights_changed:
+        weights_changed = False
         for idx, xi in enumerate(x):
             iterations += 1
             xi_list = [bias] + xi.tolist()
             if cartezian_product(xi_list, weight_vector) * y[idx] <= 0:
-                weight_vector = [y[idx] * xi_list[w_index] * learningRate + elem for w_index, elem in
+                weight_vector = [(y[idx] * xi_list[w_index] * learningRate) + elem for w_index, elem in
                                  enumerate(weight_vector)]
-                weights_changed = False
+                weights_changed = True
                 mistakes += 1
 
     return weight_vector, mistakes, iterations
@@ -68,10 +63,8 @@ def perceptronAlgo(x, y, learningRate=1):
 def split_by_sign(y):
     pos_index, neg_index = [], []
     for i, yi in enumerate(y):
-        if yi > 0:
-            pos_index.append(i)
-        elif yi < 0:
-            neg_index.append(i)
+        pos_index.append(i) if yi > 0 else neg_index.append(i)
+
     return pos_index, neg_index
 
 
@@ -82,34 +75,34 @@ def plot_data(x, y):
     plt.show()
 
 
-def plot_separation_hyperplane(w, original_x):
-    """
-    This is an attempt to solve 1.(f)
-    :rtype: object
-    """
-    hyperplane = '(%s)*x+1*(%s)' % (w[2] / w[1], w[0] / w[1])
-    min_x = min(original_x[::1])
-    x = np.array(range(min_x, 10))
-    evaled = eval(hyperplane)
-    plt.plot(x, evaled)
-    plt.show()
+# def plot_separation_hyperplane(w, original_x):
+#     """
+#     This is an attempt to solve 1.(f)
+#     :rtype: object
+#     """
+#     hyperplane = '(%s)*x+1*(%s)' % (w[2] / w[1], w[0] / w[1])
+#         min_x = min(original_x[::1])
+#     x = np.array(range(min_x, 10))
+#     evaled = eval(hyperplane)
+#     plt.plot(x, evaled)
+#     plt.show()
 
 
 if __name__ == '__main__':
-    original_data = import_data(sys.argv[1])
-    x, y = parse_data(original_data)
-    plot_data(x, y)
-    w, mistakes, iterations = perceptronAlgo(x, y, 1)
-    # plot_separation_hyperplane(w)
+    x, y = import_data(sys.argv[1])
+    # plot_data(x, y)
+    w, mistakes, iterations = perceptronAlgo(x, y, 0.39)
+    # plot_separation_hyperplane(w,x)
     print w, mistakes, iterations
+
 
     outputFile = open("output.txt", 'w')
     outputFile.write("output1: " + str(w) + "\n")
     outputFile.write("output2: " + str(mistakes) + "\n")
     outputFile.write("output3: " + str(iterations) + "\n")
 
-    r = calcR(x)
-    gama = calcGama(x, y)
-    print r, gama
+    # r = calcR(x)
+    # gama = calcGama(x, y)
+    # print r, gama
 
-    print (r / gama) * (r / gama)
+    # print (r / gama) * (r / gama)
