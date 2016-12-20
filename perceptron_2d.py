@@ -91,7 +91,7 @@ def plot_data(x, y):
 if __name__ == '__main__':
     x, y = import_data(sys.argv[1])
     # plot_data(x, y)
-    w, mistakes, iterations = perceptronAlgo(x, y, 0.39)
+    w, mistakes, iterations = perceptronAlgo(x, y, 0.70)
     # plot_separation_hyperplane(w,x)
     print w, mistakes, iterations
 
