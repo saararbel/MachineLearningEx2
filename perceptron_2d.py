@@ -2,7 +2,7 @@ import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
-
+import math
 
 def import_data(dataSetFilePath):
     data = np.loadtxt(dataSetFilePath, delimiter=',')
@@ -15,20 +15,19 @@ def import_data(dataSetFilePath):
 def calc_r(x):
     R = 0
     for idx, xi in enumerate(x):
-        lst = xi.tolist()
-        if np.math.sqrt(lst[0] * lst[0] + lst[1] * lst[1]) > R:
-            R = np.math.sqrt(lst[0] * lst[0] + lst[1] * lst[1])
+        square_size = sum([x*x for x in xi.tolist()])
+        if math.sqrt(square_size) > R:
+            R = math.sqrt(square_size)
 
     return R
 
 
-def calcGama(x, y):
+def calcGama(x, y, normalize_w):
     gama = sys.float_info.max
     for idx, xi in enumerate(x):
-        lst = xi.tolist()
-        xi_size = np.math.sqrt(lst[0] * lst[0] + lst[1] * lst[1])
-        if xi_size * y[idx] < gama:
-            gama = xi_size * y[idx]
+        temp = np.dot([1] + xi.tolist(), normalize_w) * y[idx]
+        if  temp < gama:
+            gama = temp * y[idx]
 
     return gama
 
@@ -48,10 +47,10 @@ def perceptronAlgo(x, y, learningRate=1):
     weights_changed = True
     while weights_changed:
         weights_changed = False
+        iterations += 1
         for idx, xi in enumerate(x):
-            iterations += 1
             xi_list = [bias] + xi.tolist()
-            if cartezian_product(xi_list, weight_vector) * y[idx] <= 0:
+            if np.dot(xi_list, weight_vector) * y[idx] <= 0:
                 weight_vector = [(y[idx] * xi_list[w_index] * learningRate) + elem for w_index, elem in
                                  enumerate(weight_vector)]
                 weights_changed = True
@@ -75,34 +74,26 @@ def plot_data(x, y):
     plt.show()
 
 
-# def plot_separation_hyperplane(w, original_x):
-#     """
-#     This is an attempt to solve 1.(f)
-#     :rtype: object
-#     """
-#     hyperplane = '(%s)*x+1*(%s)' % (w[2] / w[1], w[0] / w[1])
-#         min_x = min(original_x[::1])
-#     x = np.array(range(min_x, 10))
-#     evaled = eval(hyperplane)
-#     plt.plot(x, evaled)
-#     plt.show()
+def vector_normalize(w):
+    size = math.sqrt(sum([x*x for x in w]))
+    return [float(x/size) for x in w]
+
+
+def calc_mistake_bound():
+    r = calc_r(x)
+    gama = calcGama(x, y, vector_normalize(w))
+    return (r / gama) * (r / gama)
 
 
 if __name__ == '__main__':
     x, y = import_data(sys.argv[1])
     # plot_data(x, y)
-    w, mistakes, iterations = perceptronAlgo(x, y, 0.70)
+    w, mistakes, iterations = perceptronAlgo(x, y, 0.39)
     # plot_separation_hyperplane(w,x)
-    print w, mistakes, iterations
-
 
     outputFile = open("output.txt", 'w')
     outputFile.write("output1: " + str(w) + "\n")
     outputFile.write("output2: " + str(mistakes) + "\n")
     outputFile.write("output3: " + str(iterations) + "\n")
+    outputFile.write("output4: " + str(calc_mistake_bound()) + "\n")
 
-    # r = calcR(x)
-    # gama = calcGama(x, y)
-    # print r, gama
-
-    # print (r / gama) * (r / gama)

@@ -1,6 +1,7 @@
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
+import math
 
 def parseDataSet(dataSetFilePath):
     data = np.loadtxt(dataSetFilePath)
@@ -23,12 +24,12 @@ def cartezian_product(x, w):
 
 def perceptronAlgo(x_train, y_train, x_validation, y_validation, learningRate=1):
     weight_vector = [0] * (x_train[0].size + 1)
+    number_iterations_acc_not_improved = 40
     mistakes, iterations, bias = 0, 0, 1
     best_validation_accuracy = 0.0
     best_validation_index = -1
     best_weight_vector = weight_vector
     while True:
-        # best_validation_improve = False
         iterations += 1
         for idx, xi in enumerate(x_train):
             xi_list = [bias] + xi.tolist()
@@ -38,16 +39,16 @@ def perceptronAlgo(x_train, y_train, x_validation, y_validation, learningRate=1)
                 mistakes += 1
 
         validation_acc = check_validation_accuracy(x_validation, y_validation,weight_vector)
-        if validation_acc > best_validation_accuracy :
+        if validation_acc > best_validation_accuracy:
             best_validation_index = iterations
             best_validation_accuracy = validation_acc
             best_weight_vector = list(weight_vector)
-        if iterations > best_validation_index + 10 :
+        if iterations > best_validation_index + number_iterations_acc_not_improved:
             break
 
         print "Checking validation on Iteration: %s, result: %s" % (str(iterations), str(validation_acc))
 
-    return best_weight_vector, mistakes, iterations, best_validation_accuracy
+    return best_weight_vector, iterations, best_validation_accuracy
 
 
 def check_validation_accuracy(x_validation, y_validation, weight_vector):
@@ -75,9 +76,10 @@ def plot(w):
 
 if __name__ == '__main__':
     x, y = parseDataSet(sys.argv[1])
-    x_tarin, y_train, x_validation, y_validation = divide_to_train_and_validation(x, y, 0.8)
-    w, mistakes, iterations, best_acc = perceptronAlgo(x_tarin, y_train, x_validation, y_validation)
+    x_train, y_train, x_validation, y_validation = divide_to_train_and_validation(x, y, 0.8)
+    w, iterations, best_acc = perceptronAlgo(x_train, y_train, x_validation, y_validation)
 
-
+    print "Best Accuracy: %s" % str(best_acc)
+    print "Final weight vector: %s" % str(w)
     plot(w)
 
