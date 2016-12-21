@@ -76,7 +76,8 @@ def plot(w):
 
 if __name__ == '__main__':
     x, y = parseDataSet(sys.argv[1])
-    x_train, y_train, x_validation, y_validation = divide_to_train_and_validation(x, y, 0.8)
+    training_size = 0.7
+    x_train, y_train, x_validation, y_validation = divide_to_train_and_validation(x, y, training_size)
     w, iterations, best_acc = perceptronAlgo(x_train, y_train, x_validation, y_validation)
 
     print "Best Accuracy: %s" % str(best_acc)

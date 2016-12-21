@@ -71,7 +71,7 @@ def plot_data(x, y):
     pos_index, neg_index = split_by_sign(y)
     plt.plot([x[i][0] for i in pos_index], [x[i][1] for i in pos_index], 'bo')
     plt.plot([x[i][0] for i in neg_index], [x[i][1] for i in neg_index], 'ro')
-    plt.show()
+    # plt.show()
 
 
 def vector_normalize(w):
@@ -84,13 +84,20 @@ def calc_mistake_bound():
     gama = calcGama(x, y, vector_normalize(w))
     return (r / gama) * (r / gama)
 
+def plot(w):
+    x = np.arange(-30, 30, 0.1)
+    final_line = []
+    for i in x:
+     final_line.append(-i*w[1]/w[2])
+    plt.plot(x, final_line)
+    plt.show()
 
 if __name__ == '__main__':
     x, y = import_data(sys.argv[1])
-    # plot_data(x, y)
-    w, mistakes, iterations = perceptronAlgo(x, y, 0.39)
+    plot_data(x, y)
+    w, mistakes, iterations = perceptronAlgo(x, y, 1)
     # plot_separation_hyperplane(w,x)
-
+    plot(w)
     outputFile = open("output.txt", 'w')
     outputFile.write("output1: " + str(w) + "\n")
     outputFile.write("output2: " + str(mistakes) + "\n")
